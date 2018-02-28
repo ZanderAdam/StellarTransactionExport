@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Export Stellar Transactions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      text-align: center;
+      padding: 2px;
+      font-size: 1.1em;
+    }
+
+    .content {
+      width: 90%;
+      margin: auto
+    }
+
+    input[type="text"],
+    input[type="button"] {
+      display: block;
+      width: 50%;
+      margin: 10px auto;
+      padding: 10px;
+    }
+
+    input[type="button"] {
+      background: #08b5e5;
+      border-radius: 5px;
+      color: white;
+      padding: 10px;
+      border: 1px solid #08b5e5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="content">
+    <div class="note">This will export the payments sent from Source Address (theirs) to Destination Address (yours).</div>
+    <div class="note">Proof of concept, does not export all transactions</div>
+    <div>Use Debug Console (F12) to look for info</div>
+    <hr>
+    <div>Sample Data: inflation pool payout to some random address</div>
+    <div>Destination Address: GDU4P5GP4WWNWRTF73W2SSY24NOZGKT27WYUMMKI7DYFGNVHKHBFIIHN</div>
+    <div>Source Address: GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT</div>
+    <input type="text" id="destinationAddress" placeholder="Destination Address">
+    <input type="text" id="sourceAddress" placeholder="Source Address">
+    <pre id="output"></pre>
+    <input type="button" value="Export CSV" id="export">
+  </div>
+
+  <script>
+    var sourceAccount = document.getElementById("export").onclick = function () {
+
+      var sourceAddress = document.getElementById('sourceAddress').value;
+      var destinationAddress = document.getElementById('destinationAddress').value;
+
+      if (!sourceAddress || !destinationAddress) {
+        console.error("Source Address and/or Destination Address missing");
+        return;
+      }
+
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          var paymentsOfInterest = [];
+
+          var payments = JSON.parse(xmlHttp.responseText);
+
+          payments['_embedded'].records.forEach(function (payment) {
+            if (payment['source_account'] == sourceAddress)
+              paymentsOfInterest.push({
+                date: payment['created_at'],
+                amount: payment.amount
+              });
+          });
+
+          console.log('Payments from: ' + sourceAddress + ' to ' + destinationAddress);
+          console.log(JSON.stringify(paymentsOfInterest, null, '  '));
+
+          //create csv
+          var csvFile = 'Date,Amount(XLM)';
+          paymentsOfInterest.forEach(function (payment) {
+            csvFile += '\n' + payment.date + ',' + payment.amount;
+          })
+
+          //download as file
+          var a = document.createElement('a');
+          var file = new Blob([csvFile], {
+            type: 'csv'
+          });
+          a.href = URL.createObjectURL(file);
+          a.download = 'PaymentsExport.csv';
+          a.click();
+        }
+      }
+
+      var url = 'https://horizon.stellar.org/accounts/' + sourceAddress + '/payments'
+
+      xmlHttp.open("GET", url, true);
+      xmlHttp.send(null);
+    }
+  </script>
+</body>
+
+</html>
