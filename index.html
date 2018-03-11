@@ -66,7 +66,7 @@
     <input type="text" value="GD67AOC2P4U22NUPPJFC32WN4INSVA6GLTVIZY3ORYVRXV2HUF6FGTBR" id="destinationAddress" placeholder="Destination Address">
     <input type="text" value="GA3FUYFOPWZ25YXTCA73RK2UGONHCO27OHQRSGV3VCE67UEPEFEDCOPA" id="sourceAddress" placeholder="Source Address">
     <select id="timeframe">
-      <option value="30">Last 30 Days</option>
+      <option value="30days">Last 30 Days</option>
       <option value="year">Last 1 Year</option>
       <option value="prevYear">Previous Year</option>
     </select>
@@ -115,7 +115,7 @@
           type: 'csv'
         });
         a.href = URL.createObjectURL(file);
-        a.download = 'PaymentsExport.csv';
+        a.download = `${sourceAddress.substring(0,5)}_${timeFrameValue}_PaymentsExport.csv`;
         a.click();
       });
     }
