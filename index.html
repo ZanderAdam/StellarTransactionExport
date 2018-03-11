@@ -42,8 +42,30 @@
       border: 1px solid #08b5e5;
     }
 
+    input[type="button"]:disabled {
+      background: #5a5a5a;
+      border: 1px solid #5a5a5a;
+    }
+
     select {
       background: transparent;
+    }
+
+    table {
+      margin: 0 auto;
+      text-align: left;
+      border-spacing: 0;
+      font-size: .8em;
+    }
+
+    td {
+      padding: 5px;
+      border-left: 1px solid gray;
+      border-spacing: 0;
+    }
+
+    td:last-child {
+      border-right: 1px solid gray;
     }
   </style>
 </head>
@@ -70,15 +92,25 @@
       <option value="year">Last 1 Year</option>
       <option value="prevYear">Previous Year</option>
     </select>
-    <input type="button" value="Export CSV" id="export">
-    <pre id="output"></pre>
+    <input type="button" value="Load Payments" id="get">
+    <input type="button" value="Export CSV" id="export" disabled>
+    <table>
+      <thead>
+        <td>Date</td>
+        <td>Amount</td>
+      </thead>
+      <tbody id="data">
+      </tbody>
+    </table>
   </div>
 
   <script>
-    var sourceAccount = document.getElementById("export").onclick = function () {
+    var loadedPayments = [];
 
-      var sourceAddress = document.getElementById('sourceAddress').value;
-      var destinationAddress = document.getElementById('destinationAddress').value;
+    document.getElementById("get").onclick = function () {
+
+      sourceAddress = document.getElementById('sourceAddress').value;
+      destinationAddress = document.getElementById('destinationAddress').value;
 
       if (!sourceAddress || !destinationAddress) {
         console.error("Source Address and/or Destination Address missing");
@@ -87,8 +119,8 @@
 
       var timeFrameValue = document.getElementById("timeframe").value;
 
-      var endDate = moment();
-      var startDate = moment().subtract(30, 'days').startOf('day');
+      endDate = moment();
+      startDate = moment().subtract(30, 'days').startOf('day');
 
       switch (timeFrameValue) {
         case 'year':
@@ -96,28 +128,45 @@
           break;
         case 'prevYear':
           endDate = moment().startOf('year');
+          timeFrameValue
           startDate = moment().startOf('year').subtract(1, 'year');
           break;
       }
 
       var url = 'https://horizon.stellar.org/accounts/' + destinationAddress + '/payments?limit=200&order=desc'
 
-      getData(url, sourceAddress, startDate, endDate, function (paymentsOfInterest) {
-        //create csv
-        var csvFile = 'Date,Amount(XLM)';
-        paymentsOfInterest.forEach(function (payment) {
-          csvFile += '\n' + payment.date.format() + ',' + payment.amount;
-        })
+      getData(url, sourceAddress, startDate, endDate, function (payments) {
 
-        //download as file
-        var a = document.createElement('a');
-        var file = new Blob([csvFile], {
-          type: 'csv'
+        loadedPayments = payments;
+        var dataTable = document.getElementById("data");
+        dataTable.innerHTML = '';
+
+        payments.forEach(function (payment) {
+          dataTable.innerHTML += `<tr><td>${payment.date.format()}</td><td>${payment.amount}</td></tr>`;
         });
-        a.href = URL.createObjectURL(file);
-        a.download = `${sourceAddress.substring(0,5)}_${timeFrameValue}_PaymentsExport.csv`;
-        a.click();
+
+        document.getElementById("export").disabled = false;
       });
+    }
+
+    document.getElementById("export").onclick = function () {
+      var timeFrameValue = document.getElementById("timeframe").value;
+      var sourceAddress = document.getElementById('sourceAddress').value;
+
+      //create csv
+      var csvFile = 'Date,Amount(XLM)';
+      loadedPayments.forEach(function (payment) {
+        csvFile += '\n' + payment.date.format() + ',' + payment.amount;
+      })
+
+      //download as file
+      var a = document.createElement('a');
+      var file = new Blob([csvFile], {
+        type: 'csv'
+      });
+      a.href = URL.createObjectURL(file);
+      a.download = `${sourceAddress.substring(0,5)}_${timeFrameValue}_PaymentsExport.csv`;
+      a.click();
     }
 
     function getData(url, sourceAddress, startDate, endDate, callback) {
