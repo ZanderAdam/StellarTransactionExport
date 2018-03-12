@@ -7,11 +7,10 @@
 <body>
 		<section id="tax">
 			<h2>Lumenaut Payments Export</div>
-			<div class="note">This will export the payments sent by Lumenaut to your Public Key.</div>
-
-			<small>Use Debug Console (F12) to look for info</small>
+			<p>This will export the payments sent by Lumenaut to your Public Key.</p>
 
 			<input type="text" id="address" placeholder="input your Public Key here...">
+			<small data-i18n="naut-export-more">We don't store anything on our server, calculation is done locally on your browser. <a href="https://github.com/Lumenaut-Network/lumenaut-payments-export" target="_blank" data-i18n="naut-export-info">More Info</a></small>
 
 			<select id="timeframe">
 				<option value="30days">Last 30 Days</option>
@@ -19,8 +18,8 @@
 				<option value="prevYear">Previous Year</option>
 			</select>
 
-			<input type="button" value="See Payments" id="get">
-			<input type="button" value="Export Payments" id="csv" disabled>
+			<input type="button" value="Load" class="btn" id="load">
+			<input type="button" value="Export CSV" class="btn" id="csv" disabled>
 
 			<table>
 				<thead>
