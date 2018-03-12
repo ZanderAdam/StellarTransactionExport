@@ -26,7 +26,7 @@ document.getElementById("load").onclick = function () {
 			break;
 	}
 
-	var url = 'https://horizon.stellar.org/accounts/' + address + '/payments?limit=1000&order=desc'
+	var url = 'https://horizon.stellar.org/accounts/' + address + '/payments?limit=200&order=desc'
 
 	getData(url, lumenaut, startDate, endDate, function (payments) {
 		loadedPayments = payments;
