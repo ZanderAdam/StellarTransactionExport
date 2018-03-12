@@ -3,7 +3,6 @@
 var loadedPayments = [];
 
 document.getElementById("load").onclick = function () {
-
 	lumenaut = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT';
 	address = document.getElementById('address').value;
 
@@ -27,7 +26,7 @@ document.getElementById("load").onclick = function () {
 			break;
 	}
 
-	var url = 'https://horizon.stellar.org/accounts/' + address + '/payments?limit=200&order=desc'
+	var url = 'https://horizon.stellar.org/accounts/' + address + '/payments?limit=1000&order=desc'
 
 	getData(url, lumenaut, startDate, endDate, function (payments) {
 		loadedPayments = payments;
@@ -43,8 +42,8 @@ document.getElementById("load").onclick = function () {
 }
 
 document.getElementById("csv").onclick = function () {
-	var timeFrameValue = document.getElementById("timeframe").value;
 	var lumenaut = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT';
+	var timeFrameValue = document.getElementById("timeframe").value;
 
 	//create csv
 	var csvFile = 'Date,Amount(XLM)';
