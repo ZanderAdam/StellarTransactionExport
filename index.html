@@ -1,77 +1,14 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Export Stellar Transactions</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
-  <style>
-    * {
-      text-align: center;
-      padding: 2px;
-      font-size: 1.1em;
-    }
-
-    .content {
-      width: 90%;
-      margin: auto
-    }
-
-    input[type="text"],
-    input[type="button"],
-    select {
-      display: block;
-      width: 50%;
-      margin: 10px auto;
-      padding: 10px;
-      border: 1ps solid lightgrey;
-      -ms-box-sizing: content-box;
-      -moz-box-sizing: content-box;
-      -webkit-box-sizing: content-box;
-      box-sizing: content-box;
-
-    }
-
-    input[type="button"] {
-      background: #08b5e5;
-      border-radius: 5px;
-      color: white;
-      padding: 10px;
-      border: 1px solid #08b5e5;
-    }
-
-    input[type="button"]:disabled {
-      background: #5a5a5a;
-      border: 1px solid #5a5a5a;
-    }
-
-    select {
-      background: transparent;
-    }
-
-    table {
-      margin: 0 auto;
-      text-align: left;
-      border-spacing: 0;
-      font-size: .8em;
-    }
-
-    td {
-      padding: 5px;
-      border-left: 1px solid gray;
-      border-spacing: 0;
-    }
-
-    td:last-child {
-      border-right: 1px solid gray;
-    }
-  </style>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Export Stellar Transactions</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
 </head>
-
 <body>
-  <div class="content">
+		<section id="tax">
     <div>DO NOT USE TO DO YOUR TAXES</div>
     <div class="note">This will export the payments sent from Source Address (theirs) to Destination Address (yours).</div>
     <div class="note">Proof of concept, does not export all transactions</div>
@@ -102,125 +39,7 @@
       <tbody id="data">
       </tbody>
     </table>
-  </div>
-
-  <script>
-    var loadedPayments = [];
-
-    document.getElementById("get").onclick = function () {
-
-      sourceAddress = document.getElementById('sourceAddress').value;
-      destinationAddress = document.getElementById('destinationAddress').value;
-
-      if (!sourceAddress || !destinationAddress) {
-        console.error("Source Address and/or Destination Address missing");
-        return;
-      }
-
-      var timeFrameValue = document.getElementById("timeframe").value;
-
-      endDate = moment();
-      startDate = moment().subtract(30, 'days').startOf('day');
-
-      switch (timeFrameValue) {
-        case 'year':
-          startDate = moment().subtract(1, 'year').startOf('day');
-          break;
-        case 'prevYear':
-          endDate = moment().startOf('year');
-          timeFrameValue
-          startDate = moment().startOf('year').subtract(1, 'year');
-          break;
-      }
-
-      var url = 'https://horizon.stellar.org/accounts/' + destinationAddress + '/payments?limit=200&order=desc'
-
-      getData(url, sourceAddress, startDate, endDate, function (payments) {
-
-        loadedPayments = payments;
-        var dataTable = document.getElementById("data");
-        dataTable.innerHTML = '';
-
-        payments.forEach(function (payment) {
-          dataTable.innerHTML += `<tr><td>${payment.date.format()}</td><td>${payment.amount}</td></tr>`;
-        });
-
-        document.getElementById("export").disabled = false;
-      });
-    }
-
-    document.getElementById("export").onclick = function () {
-      var timeFrameValue = document.getElementById("timeframe").value;
-      var sourceAddress = document.getElementById('sourceAddress').value;
-
-      //create csv
-      var csvFile = 'Date,Amount(XLM)';
-      loadedPayments.forEach(function (payment) {
-        csvFile += '\n' + payment.date.format() + ',' + payment.amount;
-      })
-
-      //download as file
-      var a = document.createElement('a');
-      var file = new Blob([csvFile], {
-        type: 'csv'
-      });
-      a.href = URL.createObjectURL(file);
-      a.download = `${sourceAddress.substring(0,5)}_${timeFrameValue}_PaymentsExport.csv`;
-      a.click();
-    }
-
-    function getData(url, sourceAddress, startDate, endDate, callback) {
-
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-
-          var payments = JSON.parse(xmlHttp.responseText);
-
-          processPayments(payments, sourceAddress, startDate, endDate, callback);
-        } else if (xmlHttp.status == 404) {
-          callback([]);
-        }
-      }
-
-      xmlHttp.open("GET", url, true);
-      xmlHttp.send(null);
-    }
-
-    function processPayments(payments, sourceAddress, startDate, endDate, callback) {
-      var paymentsOfInterest = [];
-      var lastPaymentDate;
-      var records = payments['_embedded'].records;
-
-      if (records.length == 0) {
-        callback(paymentsOfInterest);
-        return;
-      }
-
-      records.forEach(function (payment) {
-        lastPaymentDate = moment(payment['created_at']);
-
-        if (!lastPaymentDate.isBetween(startDate, endDate)) {
-          return;
-        }
-
-        if (payment['source_account'] == sourceAddress) {
-
-          paymentsOfInterest.push({
-            date: lastPaymentDate,
-            amount: payment.amount
-          });
-        }
-      });
-
-      if (lastPaymentDate.isAfter(startDate))
-        getData(payments['_links'].prev.href, sourceAddress, startDate, endDate, function (newPayments) {
-          callback(paymentsOfInterest.concat(newPayments));
-        });
-      else
-        callback(paymentsOfInterest);
-    }
-  </script>
+		</section>
+	<script src="main.js"></script>
 </body>
-
 </html>
