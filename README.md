@@ -1,4 +1,3 @@
-# StellarTransactionExport
-Exports transactions between two addresses - runs client side
+# Lumenaut Payment Export
 
-Check it out: https://zanderadam.github.io/StellarTransactionExport/
+Exports client payments by Lumenaut.net
