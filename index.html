@@ -7,24 +7,26 @@
 <body>
 		<section id="tax">
 			<h2>Lumenaut Payments Export</div>
-			<p>This will export the payments sent by Lumenaut to your Public Key.</p>
-
-			<input type="text" id="address" placeholder="input your Public Key here...">
-			<small data-i18n="naut-export-more">We don't store anything on our server, calculation is done locally on your browser. <a href="https://github.com/Lumenaut-Network/lumenaut-payments-export" target="_blank" data-i18n="naut-export-info">More Info</a></small>
+			<p>This will export the payments sent by Lumenaut to a given Public Key. Input the Public Key bellow and press the button "Load" to get the payment's information directly from the network. If desired you can export a CSV file with the payment's information by pressing the button "Export CSV".</p>
 
 			<select id="timeframe">
-				<option value="30days">Last 30 Days</option>
-				<option value="year">Last Year</option>
-				<option value="prevYear">Previous Year</option>
+				<option value="30days" data-i18n="naut-export-30">Last 30 Days</option>
+				<option value="year" data-i18n="naut-export-year">Last Year</option>
+				<option value="prevYear" data-i18n="naut-export-previous">Previous Year</option>
 			</select>
+
+			<input type="text" id="address" placeholder="input your Public Key here...">
+			<small>We don't store anything on our server, calculation is done locally on your browser. <a href="https://github.com/Lumenaut-Network/lumenaut-payments-export" target="_blank">More Info</a></small>
 
 			<input type="button" value="Load" class="btn" id="load">
 			<input type="button" value="Export CSV" class="btn" id="csv" disabled>
 
 			<table>
 				<thead>
-					<td>Date</td>
-					<td>Amount</td>
+					<tr>
+						<td>Date</td>
+						<td>Amount</td>
+					</tr>
 				</thead>
 				<tbody id="data">
 					<td>No Public Key loaded...</td>
