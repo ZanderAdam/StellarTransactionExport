@@ -2,7 +2,7 @@
 
 var loadedPayments = [];
 
-document.getElementById("get").onclick = function () {
+document.getElementById("load").onclick = function () {
 
 	lumenaut = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT';
 	address = document.getElementById('address').value;
