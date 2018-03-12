@@ -2,44 +2,41 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Export Stellar Transactions</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
+	<title>Lumenaut Payments Export</title>
 </head>
 <body>
 		<section id="tax">
-    <div>DO NOT USE TO DO YOUR TAXES</div>
-    <div class="note">This will export the payments sent from Source Address (theirs) to Destination Address (yours).</div>
-    <div class="note">Proof of concept, does not export all transactions</div>
-    <div>By using this you accept the attached
-      <a href="https://github.com/ZanderAdam/StellarTransactionExport/blob/master/LICENSE">
-        license</a>
-    </div>
-    <div>Use Debug Console (F12) to look for info</div>
-    <a href="https://github.com/ZanderAdam/StellarTransactionExport">Fork the code</a>
-    <hr>
-    <div>Sample Data: inflation pool payout to some random address</div>
-    <div>Destination Address: GD67AOC2P4U22NUPPJFC32WN4INSVA6GLTVIZY3ORYVRXV2HUF6FGTBR</div>
-    <div>Source Address: GA3FUYFOPWZ25YXTCA73RK2UGONHCO27OHQRSGV3VCE67UEPEFEDCOPA</div>
-    <input type="text" value="GD67AOC2P4U22NUPPJFC32WN4INSVA6GLTVIZY3ORYVRXV2HUF6FGTBR" id="destinationAddress" placeholder="Destination Address">
-    <input type="text" value="GA3FUYFOPWZ25YXTCA73RK2UGONHCO27OHQRSGV3VCE67UEPEFEDCOPA" id="sourceAddress" placeholder="Source Address">
-    <select id="timeframe">
-      <option value="30days">Last 30 Days</option>
-      <option value="year">Last 1 Year</option>
-      <option value="prevYear">Previous Year</option>
-    </select>
-    <input type="button" value="Load Payments" id="get">
-    <input type="button" value="Export CSV" id="export" disabled>
-    <table>
-      <thead>
-        <td>Date</td>
-        <td>Amount</td>
-      </thead>
-      <tbody id="data">
-      </tbody>
-    </table>
+			<h2>Lumenaut Payments Export</div>
+			<div class="note">This will export the payments sent by Lumenaut to your Public Key.</div>
+
+			<small>Use Debug Console (F12) to look for info</small>
+
+			<input type="text" id="address" placeholder="input your Public Key here...">
+
+			<select id="timeframe">
+				<option value="30days">Last 30 Days</option>
+				<option value="year">Last Year</option>
+				<option value="prevYear">Previous Year</option>
+			</select>
+
+			<input type="button" value="See Payments" id="get">
+			<input type="button" value="Export Payments" id="csv" disabled>
+
+			<table>
+				<thead>
+					<td>Date</td>
+					<td>Amount</td>
+				</thead>
+				<tbody id="data">
+					<td>No Public Key loaded...</td>
+				</tbody>
+			</table>
 		</section>
+
+	<!-- Moment -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js" integrity="sha384-ahj+s6Xl73DCw/77Z2uM/ETxQh9LuG2dUkcEaATtk1AY3hsJlOq1aFj8xInGmtOU" crossorigin="anonymous"></script>
+
+	<!-- JS -->
 	<script src="main.js"></script>
 </body>
 </html>
