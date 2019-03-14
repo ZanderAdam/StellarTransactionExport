@@ -4,7 +4,7 @@ var loadedPayments = [];
 
 document.getElementById("load").onclick = function () {
 	lumenaut = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT';
-	address = document.getElementById('address').value;
+	address = document.getElementById('address_export').value;
 
 	if (!address) {
 		console.error("Your Public Key is missing!");
