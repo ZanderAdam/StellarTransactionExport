@@ -1,226 +1,45 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Export Stellar Transactions</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
-  <style>
-    * {
-      text-align: center;
-      padding: 2px;
-      font-size: 1.1em;
-    }
-
-    .content {
-      width: 90%;
-      margin: auto
-    }
-
-    input[type="text"],
-    input[type="button"],
-    select {
-      display: block;
-      width: 50%;
-      margin: 10px auto;
-      padding: 10px;
-      border: 1ps solid lightgrey;
-      -ms-box-sizing: content-box;
-      -moz-box-sizing: content-box;
-      -webkit-box-sizing: content-box;
-      box-sizing: content-box;
-
-    }
-
-    input[type="button"] {
-      background: #08b5e5;
-      border-radius: 5px;
-      color: white;
-      padding: 10px;
-      border: 1px solid #08b5e5;
-    }
-
-    input[type="button"]:disabled {
-      background: #5a5a5a;
-      border: 1px solid #5a5a5a;
-    }
-
-    select {
-      background: transparent;
-    }
-
-    table {
-      margin: 0 auto;
-      text-align: left;
-      border-spacing: 0;
-      font-size: .8em;
-    }
-
-    td {
-      padding: 5px;
-      border-left: 1px solid gray;
-      border-spacing: 0;
-    }
-
-    td:last-child {
-      border-right: 1px solid gray;
-    }
-  </style>
+	<meta charset="utf-8">
+	<title>Lumenaut Payments Export</title>
 </head>
-
 <body>
-  <div class="content">
-    <div>DO NOT USE TO DO YOUR TAXES</div>
-    <div class="note">This will export the payments sent from Source Address (theirs) to Destination Address (yours).</div>
-    <div class="note">Proof of concept, does not export all transactions</div>
-    <div>By using this you accept the attached
-      <a href="https://github.com/ZanderAdam/StellarTransactionExport/blob/master/LICENSE">
-        license</a>
-    </div>
-    <div>Use Debug Console (F12) to look for info</div>
-    <a href="https://github.com/ZanderAdam/StellarTransactionExport">Fork the code</a>
-    <hr>
-    <div>Sample Data: inflation pool payout to some random address</div>
-    <div>Destination Address: GD67AOC2P4U22NUPPJFC32WN4INSVA6GLTVIZY3ORYVRXV2HUF6FGTBR</div>
-    <div>Source Address: GA3FUYFOPWZ25YXTCA73RK2UGONHCO27OHQRSGV3VCE67UEPEFEDCOPA</div>
-    <input type="text" value="GD67AOC2P4U22NUPPJFC32WN4INSVA6GLTVIZY3ORYVRXV2HUF6FGTBR" id="destinationAddress" placeholder="Destination Address">
-    <input type="text" value="GA3FUYFOPWZ25YXTCA73RK2UGONHCO27OHQRSGV3VCE67UEPEFEDCOPA" id="sourceAddress" placeholder="Source Address">
-    <select id="timeframe">
-      <option value="30days">Last 30 Days</option>
-      <option value="year">Last 1 Year</option>
-      <option value="prevYear">Previous Year</option>
-    </select>
-    <input type="button" value="Load Payments" id="get">
-    <input type="button" value="Export CSV" id="export" disabled>
-    <table>
-      <thead>
-        <td>Date</td>
-        <td>Amount</td>
-      </thead>
-      <tbody id="data">
-      </tbody>
-    </table>
-  </div>
+		<section id="tax">
+			<h2>Lumenaut Payments Export</div>
+			<p>This will export the payments sent by Lumenaut to a given Public Key. Input the Public Key bellow and press the button "Load" to get the payment's information directly from the network. If desired you can export a CSV file with the payment's information by pressing the button "Export CSV".</p>
 
-  <script>
-    var loadedPayments = [];
+			<select id="timeframe">
+				<option value="30days">Last 30 Days</option>
+				<option value="year">Last Year</option>
+				<option value="prevYear">Previous Year</option>
+			</select>
 
-    document.getElementById("get").onclick = function () {
+			<input type="text" id="address_export" placeholder="input your Public Key here...">
+			<small>We don't store anything on our server, calculation is done locally on your browser. <a href="https://github.com/Lumenaut-Network/lumenaut-payments-export" target="_blank">More Info</a></small>
 
-      sourceAddress = document.getElementById('sourceAddress').value;
-      destinationAddress = document.getElementById('destinationAddress').value;
+			<input type="button" value="Load" class="btn" id="load">
+			<input type="button" value="Export CSV" class="btn" id="csv" disabled>
 
-      if (!sourceAddress || !destinationAddress) {
-        console.error("Source Address and/or Destination Address missing");
-        return;
-      }
+			<table>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Amount</th>
+					</tr>
+				</thead>
+				<tbody id="data">
+					<tr>
+						<td colspan="2">No Public Key loaded...</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
 
-      var timeFrameValue = document.getElementById("timeframe").value;
+	<!-- Moment -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js" integrity="sha384-ahj+s6Xl73DCw/77Z2uM/ETxQh9LuG2dUkcEaATtk1AY3hsJlOq1aFj8xInGmtOU" crossorigin="anonymous"></script>
 
-      endDate = moment();
-      startDate = moment().subtract(30, 'days').startOf('day');
-
-      switch (timeFrameValue) {
-        case 'year':
-          startDate = moment().subtract(1, 'year').startOf('day');
-          break;
-        case 'prevYear':
-          endDate = moment().startOf('year');
-          timeFrameValue
-          startDate = moment().startOf('year').subtract(1, 'year');
-          break;
-      }
-
-      var url = 'https://horizon.stellar.org/accounts/' + destinationAddress + '/payments?limit=200&order=desc'
-
-      getData(url, sourceAddress, startDate, endDate, function (payments) {
-
-        loadedPayments = payments;
-        var dataTable = document.getElementById("data");
-        dataTable.innerHTML = '';
-
-        payments.forEach(function (payment) {
-          dataTable.innerHTML += `<tr><td>${payment.date.format()}</td><td>${payment.amount}</td></tr>`;
-        });
-
-        document.getElementById("export").disabled = false;
-      });
-    }
-
-    document.getElementById("export").onclick = function () {
-      var timeFrameValue = document.getElementById("timeframe").value;
-      var sourceAddress = document.getElementById('sourceAddress').value;
-
-      //create csv
-      var csvFile = 'Date,Amount(XLM)';
-      loadedPayments.forEach(function (payment) {
-        csvFile += '\n' + payment.date.format() + ',' + payment.amount;
-      })
-
-      //download as file
-      var a = document.createElement('a');
-      var file = new Blob([csvFile], {
-        type: 'csv'
-      });
-      a.href = URL.createObjectURL(file);
-      a.download = `${sourceAddress.substring(0,5)}_${timeFrameValue}_PaymentsExport.csv`;
-      a.click();
-    }
-
-    function getData(url, sourceAddress, startDate, endDate, callback) {
-
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-
-          var payments = JSON.parse(xmlHttp.responseText);
-
-          processPayments(payments, sourceAddress, startDate, endDate, callback);
-        } else if (xmlHttp.status == 404) {
-          callback([]);
-        }
-      }
-
-      xmlHttp.open("GET", url, true);
-      xmlHttp.send(null);
-    }
-
-    function processPayments(payments, sourceAddress, startDate, endDate, callback) {
-      var paymentsOfInterest = [];
-      var lastPaymentDate;
-      var records = payments['_embedded'].records;
-
-      if (records.length == 0) {
-        callback(paymentsOfInterest);
-        return;
-      }
-
-      records.forEach(function (payment) {
-        lastPaymentDate = moment(payment['created_at']);
-
-        if (!lastPaymentDate.isBetween(startDate, endDate)) {
-          return;
-        }
-
-        if (payment['source_account'] == sourceAddress) {
-
-          paymentsOfInterest.push({
-            date: lastPaymentDate,
-            amount: payment.amount
-          });
-        }
-      });
-
-      if (lastPaymentDate.isAfter(startDate))
-        getData(payments['_links'].prev.href, sourceAddress, startDate, endDate, function (newPayments) {
-          callback(paymentsOfInterest.concat(newPayments));
-        });
-      else
-        callback(paymentsOfInterest);
-    }
-  </script>
+	<!-- JS -->
+	<script src="main.js"></script>
 </body>
-
 </html>
